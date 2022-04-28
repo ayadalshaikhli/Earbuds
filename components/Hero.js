@@ -1,8 +1,10 @@
 import { Canvas, useLoader, useFrame, useSpring } from "@react-three/fiber";
 import React, { Suspense, useRef, useState, useEffect } from "react";
 import {
+  CubeCamera,
   Environment,
   Html,
+  MeshReflectorMaterial,
   PerspectiveCamera,
   useGLTF,
 } from "@react-three/drei";
@@ -11,6 +13,9 @@ import * as THREE from "three";
 import { proxy, useSnapshot } from "valtio";
 import { gsap, Expo } from "gsap/dist/gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import { LedRings } from "./LedRing";
+import Ground from "./Ground";
+import { LinearEncoding, RepeatWrapping, TextureLoader } from "three";
 gsap.registerPlugin(ScrollTrigger);
 const color = new THREE.Color();
 const tl = gsap.timeline({
@@ -21,13 +26,14 @@ const Lights = () => {
   return (
     <>
       {/* Ambient Light illuminates lights for all objects */}
-      <ambientLight intensity={0.3} />
+      <ambientLight intensity={5.3} />
       {/* Diretion light */}
       <directionalLight position={[10, 10, 5]} intensity={2.5} />
+      <directionalLight position={[-100, 10, 5]} intensity={2.5} />
       <directionalLight
         castShadow
         position={[0, 10, 0]}
-        intensity={5.5}
+        intensity={1.5}
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
         shadow-camera-far={50}
@@ -37,13 +43,13 @@ const Lights = () => {
         shadow-camera-bottom={-10}
       />
       {/* Spotlight Large overhead light */}
-      <spotLight intensity={0.5} position={[1000, 0, 0]} castShadow />
+      <spotLight intensity={1.5} position={[1000, 0, 0]} castShadow />
     </>
   );
 };
 
 function Green() {
-  const { nodes, materials } = useGLTF("/earbuds.glb");
+  const { nodes, materials } = useGLTF("/Dog.glb");
   const cup = useRef();
   const moon = useRef();
   const mark = useRef();
@@ -73,35 +79,57 @@ function Green() {
     // cup.current.rotation.x = 5.63;
     // cup.current.rotation.y = 4.1;
 
-    tl.from(moon.current.position, 3, {
-      y: 320,
-      ease: Expo.easeInOut,
-    });
-    // gsap.from(moon.current.rotation, 60, {
-    //   x: 300,
-    //   repeat: -1,
+    // gsap.from(cam.current.position, 5, {
+    //   z: -20.5,
     //   ease: "none",
     // });
+    // gsap.from(moon.current.rotation, 3, {
+    //   x: -8.412,
+    //   ease: "none",
+    // });
+    gsap.from(moon.current.rotation, 60, {
+      y: -7.412,
+      repeat: -1,
+      ease: "none",
+    });
+    gsap.from(cam.current.position, 1, {
+      z: -20.412,
+      ease: Expo.easeInOut,
+    });
+    gsap.from(cam.current.rotation, 3, {
+      x: -2.412,
+      ease: "none",
+    });
 
-    tl.from(
-      moon.current.rotation,
-      3,
-      {
-        z: 3.1,
+    // tl.from(
+    //   moon.current.rotation,
+    //   3,
+    //   {
+    //     x: 3.1,
 
-        ease: "none",
-      },
-      "-=2"
-    );
-    tl.to(
-      mark.current.rotation,
-      1,
-      {
-        z: 6.9,
-        ease: "none",
-      },
-      "-=1"
-    );
+    //     ease: "none",
+    //   },
+    //   "-=2"
+    // );
+    // gsap.from(
+    //   moon.current.rotation,
+    //   50,
+    //   {
+    //     y: -7.76573,
+    //     ease: "none",
+    //     repeat: -1,
+    //   },
+    //   -3
+    // );
+    // tl.to(
+    //   mark.current.rotation,
+    //   1,
+    //   {
+    //     z: 6.9,
+    //     ease: "none",
+    //   },
+    //   "-=1"
+    // );
     ScrollTrigger.create({
       trigger: ".product-list",
       start: "top 50%",
@@ -129,8 +157,9 @@ function Green() {
       start: "top top",
       end: "bottom bottom",
       onUpdate: (self) => {
-        cup.current.rotation.x = -1 * Math.PI * self.progress;
-        cup.current.rotation.y = -1 * Math.PI * self.progress;
+        // cup.current.rotation.x = -2 * Math.PI * self.progress;
+        // cup.current.rotation.y = -1 * Math.PI * self.progress;
+        cam.current.position.z = -1 * Math.PI * self.progress;
         // cam.current.position.z = 25 * self.progress;
 
         // cup.current.rotation.z = -2 * Math.PI * self.progress;
@@ -139,14 +168,35 @@ function Green() {
       },
     });
   });
+  // const [roughness, normal] = useLoader(TextureLoader, [
+  //   "textures/terrain-roughness.jpg",
+  //   "textures/silver.jpg",
+  // ]);
+
+  // useEffect(() => {
+  //   [normal, roughness].forEach((t) => {
+  //     t.wrapS = RepeatWrapping;
+  //     t.wrapT = RepeatWrapping;
+  //     t.repeat.set(5, 5);
+  //     t.offset.set(0, 0);
+  //   });
+
+  //   normal.encoding = LinearEncoding;
+  // }, [normal, roughness]);
+
+  // useFrame((state, delta) => {
+  //   let t = -state.clock.getElapsedTime() * 0.128;
+  //   roughness.offset.set(0, t % 1);
+  //   normal.offset.set(0, t % 1);
+  // });
   ScrollTrigger.clearScrollMemory();
   return (
     <>
       <group
         ref={moon}
-        rotation={[-6.5, 10, 6.3]}
-        scale={11}
-        position={[0, 250, -30]}
+        rotation={[0, 0, 0]}
+        scale={1}
+        position={[0, 0, 0]}
         dispose={null}
       >
         {/* <primitive object={firstGltf.scene} position={[0, 185, 0]} /> */}
@@ -157,107 +207,36 @@ function Green() {
           // onPointerOver={(e) => (e.stopPropagation(), set(e.object.name))}
           // onPointerOut={(e) => (e.stopPropagation(), set(null))}
         >
-          <lineSegments
-            geometry={nodes.Plane004.geometry}
-            material={nodes.Plane004.material}
-            position={[0, 0.13, 0]}
-            scale={0.73}
+          <mesh
+            geometry={nodes.Cylinder.geometry}
+            material={materials["gummy 2"]}
+            position={[0, 3.8, 0]}
           />
           <mesh
-            geometry={nodes.Cube.geometry}
-            material={materials.Material}
-            position={[0.02, 0.57, -0.09]}
-            scale={[1, 0.6, 3.6]}
+            geometry={nodes.top_cup.geometry}
+            material={materials.Cups}
+            position={[0, 3.8, 0]}
           />
           <mesh
-            geometry={nodes.Cube003.geometry}
-            material={materials.Material}
-            position={[0, 0.74, 0]}
-            scale={[1, 0.6, 3.6]}
+            geometry={nodes.bottomcup.geometry}
+            material={materials.Cups}
+            position={[0, 3.8, 0]}
           />
-          <group position={[0.54, 3.58, -1.17]} scale={[0.15, 0.1, 0.12]}>
-            <mesh
-              geometry={nodes.Cube011.geometry}
-              material={materials["Material.001"]}
-            />
-            <lineSegments
-              geometry={nodes.Cube011_1.geometry}
-              material={materials["Material.001"]}
-            />
-          </group>
-          <group
-            position={[-0.46, 3.58, 1]}
-            rotation={[-Math.PI, -0.02, -Math.PI]}
-            scale={[0.15, 0.1, 0.12]}
-          >
-            <mesh
-              geometry={nodes.Cube010.geometry}
-              material={materials["Material.001"]}
-            />
-            <lineSegments
-              geometry={nodes.Cube010_1.geometry}
-              material={materials["Material.001"]}
-            />
-          </group>
-          <mesh
-            geometry={nodes.Cylinder003.geometry}
-            material={materials["Material.002"]}
-            position={[0, 0.92, 0.66]}
-            scale={0.05}
-          />
-          <mesh
-            geometry={nodes.Plane001.geometry}
-            material={materials.Material}
-            position={[0.55, 1.09, -0.65]}
-            scale={[0.1, 0.3, 0.56]}
-          />
-          <mesh
-            geometry={nodes.Plane002.geometry}
-            material={materials.Material}
-            position={[-0.46, 1.09, 0.23]}
-            rotation={[0, 0.01, 0]}
-            scale={[0.1, 0.3, 0.56]}
-          />
-          <group
-            ref={mark}
-            position={[-0.91, 1.13, -1.03]}
-            rotation={[0, 0, 4.73]}
-            scale={[0.05, 0.08, 0.35]}
-          >
-            <mesh
-              geometry={nodes.Cube020.geometry}
-              material={materials.Material}
-            />
-            <lineSegments
-              geometry={nodes.Cube020_1.geometry}
-              material={materials.Material}
-            />
-          </group>
         </group>
       </group>
-      <group
-        ref={cam}
-        name="Camera"
-        position={[-50, 700, 0]}
-        rotation={[12.62, 0.01, 0.11]}
-      >
-        <PerspectiveCamera
-          makeDefault
-          far={900}
-          near={0.1}
-          fov={25}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
+
+      <group ref={cam} name="Camera" position={[0, 0, 0]} rotation={[0, 0, 0]}>
+        <PerspectiveCamera makeDefault fov={50} position={[0, 1, 0]}>
           <directionalLight
             castShadow
-            position={[10, 20, 15]}
+            position={[300, 130, 15]}
             shadow-camera-right={8}
             shadow-camera-top={8}
             shadow-camera-left={-8}
             shadow-camera-bottom={-8}
             shadow-mapSize-width={1024}
             shadow-mapSize-height={1024}
-            intensity={2}
+            intensity={0.5}
             shadow-bias={-0.0001}
           />
         </PerspectiveCamera>
@@ -315,7 +294,9 @@ const HTMLContent = ({ products }) => {
         </mesh> */}
 
       {/* Hellod */}
+
       <Green />
+
       {/* <Pink />
       <White /> */}
       <Html fullscreen></Html>
@@ -360,6 +341,7 @@ export default function Hero({ products }) {
         // camera={{ position: [0, 380, 30], fov: 25, far: 500 }}
       >
         <Lights />
+
         <Suspense fallback={null}>
           <HTMLContent products={products} />
         </Suspense>
@@ -369,4 +351,4 @@ export default function Hero({ products }) {
   );
 }
 
-useGLTF.preload("/ringGreend.glb");
+useGLTF.preload("/bags.glb");

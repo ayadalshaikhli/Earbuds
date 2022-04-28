@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { CartContext } from "../context/shopContext";
 import MiniCart from "./MiniCart";
 import { BsBag } from "react-icons/bs";
-
+import { gsap, Expo } from "gsap/dist/gsap";
+const tl = gsap.timeline({
+  defaults: { ease: "power3.out" },
+});
 export default function Nav() {
   const { cart, cartOpen, setCartOpen } = useContext(CartContext);
 
@@ -24,17 +27,18 @@ export default function Nav() {
   }
 
   return (
-    <header className=" sticky top-0 z-20 transparent text-white colornav">
+    <header className=" sticky top-0 z-20 bg-transparent  text-white colornav navbar">
       <div className="shipping text-center">
-        <h1>
-          {free} {Good}
-        </h1>
+        <h1>FREE SHIPPING</h1>
       </div>
       <div className="flex flex-col items-center justify-between max-w-6xl pt-4 pb-2 px-4 mx-auto lg:max-w-screen-xl">
         <div className="flex">
           <Link href="/" passHref>
             <a className="cursor-pointer">
-              <span className="text-4xl pt-1  font-bold">Tataroski</span>
+              <h1 className="text-4xl pt-1  font-mono">
+                <span className="late-text">Pet</span>
+                <span className="omo"> Markte</span>
+              </h1>
             </a>
           </Link>
           <a
@@ -52,7 +56,7 @@ export default function Nav() {
             </div>
           </a>
         </div>
-        <div className="flex flex-row pt-5 ">
+        <div className="flex flex-row  pt-5 ">
           <div>
             <Link href="/info/about" passHref>
               <a className="cursor-pointer">
@@ -60,13 +64,7 @@ export default function Nav() {
               </a>
             </Link>
           </div>
-          <div>
-            <Link href="/rings" passHref>
-              <a className="cursor-pointer">
-                <span className="text-lg pt-1 px-4 ">Rings</span>
-              </a>
-            </Link>
-          </div>
+
           <div>
             <Link href="/info/contact" passHref>
               <a className="cursor-pointer ">

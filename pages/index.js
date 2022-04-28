@@ -5,19 +5,38 @@ import {
   getProductsNecklacesCollection,
   getProductsRingCollection,
 } from "../lib/shopify";
-
+import { useContext, useEffect } from "react";
 import Hero from "../components/Hero";
 import Head from "next/head";
 import FrontPage from "../components/FrontPage";
 import FirstCollectionList from "../components/firstcollection/FirstCollectionList";
 import SecoundCollectionList from "../components/secoundcollection/SecoundCollectionList";
 import ThirdCollectionList from "../components/thirdcollection/ThirdCollectionList";
-
+import { gsap, Expo } from "gsap/dist/gsap";
+const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 export default function Home({ products, rings, earrings, necklaces }) {
+  useEffect(() => {
+    tl.from(".late-text", 4, {
+      x: 100,
+      opacity: 0,
+      stagger: 0.15,
+      scale: ".8",
+      ease: Expo.easeInOut,
+    });
+    gsap.from(".navbar", 3, {
+      opacity: 0,
+      y: -100,
+      ease: Expo.easeInOut,
+    });
+    gsap.from(".omo", 3, {
+      y: 500,
+      ease: Expo.easeInOut,
+    });
+  });
   return (
     <div style={{ backgroundColor: "#000" }} className="relative body">
       <Head>
-        <title>Tataroski</title>
+        <title>PetMarkte</title>
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
         <meta
           httpEquiv="Content-Type"
@@ -30,7 +49,7 @@ export default function Home({ products, rings, earrings, necklaces }) {
           create the unique one for everyone. We love every passion and interest
           on Earth because it is a reference to the UNIQUENESS of everything."
         />
-        <meta property="og:title" content="Tataroski" />
+        <meta property="og:title" content="PetMarkte" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://www.buildnextshop.com" />
         <meta
@@ -46,6 +65,12 @@ export default function Home({ products, rings, earrings, necklaces }) {
         />
         <meta property="og:locale" content="en_US" />
         <meta property="og:site_name" content="Tataroski" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Gilda+Display&display=swap"
+          rel="stylesheet"
+        />
       </Head>
       <div className="wrap">
         <Hero products={products} />
